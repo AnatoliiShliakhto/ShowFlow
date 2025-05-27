@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "tailwindcss/preflight.css" layer(base);
+@plugin "daisyui" {
+    themes: light --default, dark, cupcake, bumblebee, emerald, corporate, synthwave, retro,
+        garden, forest, aqua, lofi, pastel, fantasy, wireframe, black, luxury, dracula, cmyk,
+        autumn, business, acid, lemonade, night, coffee, winter, dim, nord, sunset, abyss, silk;
+}
+@layer base {
+    body {
+        @apply overflow-hidden select-none antialiased forced-color-adjust-none touch-manipulation;
+    }
+}
