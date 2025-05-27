@@ -2,6 +2,7 @@ use ::serde::{Serialize, de::DeserializeOwned};
 use ::serde_json::{Map, Value};
 use ::std::path::PathBuf;
 use ::std::sync::{Arc, Mutex};
+use std::env;
 
 #[derive(Default, Clone)]
 pub struct Config {
@@ -11,7 +12,8 @@ pub struct Config {
 
 impl Config {
     pub fn init() -> Self {
-        let path = std::env::current_dir().unwrap().join("assets").join("config.json");
+        let path = PathBuf::from(env::var("LOCALAPPDATA").expect("env var LOCALAPPDATA not found"))
+            .join("ShowFlow").join("config.json");
         Self {
             path: path.clone(),
             inner: Arc::new(Mutex::new(Self::load(path))),

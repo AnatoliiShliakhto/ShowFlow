@@ -11,32 +11,38 @@ pub struct UseI18n {
 impl UseI18n {
     pub fn init() -> Self {
         let mut langs = HashMap::new();
-        let path = PathBuf::from(env::current_dir().unwrap()).join("assets/i18n/");
+        // let path = PathBuf::from(env::current_dir().unwrap()).join("/assets/i18n/");
+        // 
+        // let Ok(mut folder) = fs::read_dir(path) else {
+        //     return Self::default();
+        // };
+        // 
+        // while let Some(Ok(child)) = folder.next() {
+        //     let Ok(meta) = child.metadata() else {
+        //         continue;
+        //     };
+        //     if !meta.is_file() {
+        //         continue;
+        //     }
+        //     let Ok(filename) = child.file_name().into_string() else {
+        //         continue;
+        //     };
+        // 
+        //     let Some(lang) = filename.split(".ftl").next() else {
+        //         continue;
+        //     };
+        // 
+        //     let data = fs::read_to_string(child.path()).unwrap_or_default();
+        //     let parsed = parse_ftl(&data);
+        //     langs.insert(lang.to_string(), parsed);
+        // }
+        
+        let en = parse_ftl(include_str!("../../assets/i18n/en-US.ftl"));
+        let ua = parse_ftl(include_str!("../../assets/i18n/uk-UA.ftl"));
 
-        let Ok(mut folder) = fs::read_dir(path) else {
-            return Self::default();
-        };
-
-        while let Some(Ok(child)) = folder.next() {
-            let Ok(meta) = child.metadata() else {
-                continue;
-            };
-            if !meta.is_file() {
-                continue;
-            }
-            let Ok(filename) = child.file_name().into_string() else {
-                continue;
-            };
-
-            let Some(lang) = filename.split(".ftl").next() else {
-                continue;
-            };
-
-            let data = fs::read_to_string(child.path()).unwrap_or_default();
-            let parsed = parse_ftl(&data);
-            langs.insert(lang.to_string(), parsed);
-        }
-
+        langs.insert("en-US".to_string(), en);
+        langs.insert("uk-UA".to_string(), ua);
+        
         let active = langs
             .keys()
             .next()

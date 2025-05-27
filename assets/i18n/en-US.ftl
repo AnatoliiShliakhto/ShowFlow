@@ -38,6 +38,7 @@ theme-silk = Silk
 menu-title = Menu
 menu-play = Play
 menu-playlist = Playlist
+menu-info = Information
 menu-exit = Exit
 
 message-finish = Thank You!

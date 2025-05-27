@@ -31,4 +31,8 @@ managing and displaying presentations.
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the repository: https://github.com/AnatoliiShliakhto/ShowFlow
+2. Install dependencies: `npm install`
+3. Install Dioxus CLI: `cargo install dioxus-cli --version 0.7.0`
+4. Build the project: `dx build --release`
+5. Run the project: `dx serve`

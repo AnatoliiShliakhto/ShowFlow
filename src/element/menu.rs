@@ -38,6 +38,18 @@ pub fn Menu() -> Element {
                         { t!("menu-playlist") }
                     }
                 }
+                li {
+                    button {
+                        class: "btn btn-block btn-ghost justify-start",
+                        onclick: move |_| {
+                            spawn(async {
+                               let _ = opener::open_browser("https://github.com/AnatoliiShliakhto/ShowFlow"); 
+                            });
+                        },
+                        Icon { icon: Icons::Question, class: "size-6" }
+                        { t!("menu-info") }
+                    }
+                }                
                 div {
                     class: "divider my-0"
                 }

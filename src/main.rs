@@ -9,11 +9,17 @@ mod service;
 
 use crate::{app::*, service::*};
 use ::dioxus::{desktop::tao, prelude::*};
+use std::env;
+use std::ffi::OsString;
+use std::path::PathBuf;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 
 fn main() {
+    let dir = PathBuf::from(&env::var("LOCALAPPDATA").expect("env var LOCALAPPDATA not found"))
+        .join("ShowFlow");
+
     let window = tao::window::WindowBuilder::new()
         .with_resizable(true)
         .with_maximized(true)
@@ -26,6 +32,8 @@ fn main() {
     LaunchBuilder::new()
         .with_cfg(
             dioxus::desktop::Config::new()
+                .with_data_directory(dir)
+                .with_disable_context_menu(true)
                 .with_window(window)
                 .with_menu(None),
         )
@@ -44,7 +52,7 @@ fn main() {
             //             include_str!("../assets/i18n/uk-UA.ftl"),
             //         ))
             // });
-            
+
             rsx! {
                 document::Link { rel: "icon", href: FAVICON }
                 document::Link { rel: "stylesheet", href: TAILWIND_CSS }

@@ -21,3 +21,21 @@ script = []
 # Javascript code file
 # serve: [dev-server] only
 script = []
+
+[bundle]
+identifier = "com.showflow.app"
+publisher = "Anatolii Shliakhto"
+copyright = "Copyright 2025 Anatolii Shliakhto"
+category = "Utility"
+short_description = "Presentation Player"
+long_description = "A modern presentation player application built with Rust and Dioxus framework that provides an intuitive interface for managing and displaying presentations."
+icon = ["assets/icon.png", "assets/favicon.ico"]
+
+[bundle.windows]
+icon_path = "assets/favicon.ico"
+timestamp_url = "http://timestamp.digicert.com"
+tsp = true
+allow_downgrades = false
+
+[bundle.windows.webview_install_mode.DownloadBootstrapper]
+silent = true

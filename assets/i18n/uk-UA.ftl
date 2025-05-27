@@ -38,6 +38,7 @@ theme-silk = Шовк
 menu-title = Меню
 menu-play = Показ
 menu-playlist = Список показу
+menu-info = Інформація
 menu-exit = Вихід
 
 message-finish = Дякуємо за увагу!
