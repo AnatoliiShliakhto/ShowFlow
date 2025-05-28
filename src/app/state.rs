@@ -176,7 +176,7 @@ fn get_files(path: PathBuf) -> Result<Vec<Entry>, ()> {
             continue;
         };
 
-        if filename.starts_with(".") {
+        if filename.starts_with('.') || filename.contains('~') {
             continue;
         }
 

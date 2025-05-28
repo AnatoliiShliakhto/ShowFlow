@@ -16,7 +16,10 @@ pub fn Layout() -> Element {
                 fallback: |_context: SuspenseContext| rsx! {
                     Loading {}
                 },
-                Outlet::<Route> {}
+                div {
+                    class: "flex flex-1 mt-15 p-5 pt-0",
+                    Outlet::<Route> {}
+                }
             }
         }
     }

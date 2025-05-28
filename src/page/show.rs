@@ -3,7 +3,8 @@ use ::dioxus::prelude::*;
 
 pub fn Show() -> Element {
     let mut busy = use_signal(|| false);
-    let queue = use_state().queue();
+    let state = use_state();
+    let queue = state.queue();
 
     if busy() {
         return rsx! {
@@ -17,57 +18,67 @@ pub fn Show() -> Element {
         };
     }
 
-    let current = use_memo(|| {
-        if use_state().queue().is_empty() {
+    let current = use_memo(move || {
+        if queue().is_empty() {
             None
         } else {
-            Some(use_state().current())
+            Some(state.current())
         }
     });
 
+    let open = move |idx: usize| {
+        spawn(async move {
+            busy.set(true);
+            tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+            busy.set(false)
+        });
+        use_state().open(idx)
+    };
+
     rsx! {
         div {
-            class:"bg-base-300 rounded-box flex flex-1 flex-col mt-15 mb-5 mx-5",
+            class: "bg-base-300 rounded-box flex flex-1 flex-col py-1",
             if let Some(current) = &*current.read() {
                 div {
                     class: "flex flex-1 flex-col justify-center items-center gap-10",
                     div {
-                        class: "text-6xl uppercase font-semibold",
-                        { current.name.clone() }
+                        class: "flex text-6xl uppercase font-semibold text-center p-2",
+                        { current.name.as_str() }
                     }
                     if let Some(image) = &current.thumbnail {
                         div {
-                            class: "border rounded-lg p-2 text-base-content/30 shadow-xl bg-base-200",
+                            class: "border rounded-lg p-2 border-base-content/30 shadow-xl bg-base-200",
+                            class: "hover:scale-110 hover:cursor-pointer hover:bg-accent/40",
+                            class: "transition-all duration-300 ease-in-out",
+                            onclick: move |_| { open(0) },
                             img {
                                 class: "aspect-auto w-100",
-                                src: image.clone(),
+                                src: image.as_str(),
                             }
                         }
-                    }
-                    div {
-                        class: "flex gap-10",
+                    } else {
                         div {
-                            class: "inline-flex border rounded-lg p-4 p-4 gap-2 text-success hover:bg-success hover:cursor-pointer group items-center",
-                            onclick: move |_| {
-                                spawn(async move {
-                                    busy.set(true);
-                                    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
-                                    busy.set(false)
-                                });
-                                use_state().open(0)
-                            },
+                            class: "inline-flex border rounded-lg p-4 gap-4 text-success group items-center",
+                            class: "hover:bg-success hover:cursor-pointer hover:shadow-xl",
+                            class: "transition-all duration-300 ease-in-out",
+                            onclick: move |_| { open(0) },
                             Icon { icon: Icons::Play, class: "size-10 text-success group-hover:text-base-100" },
                             span {
                                 class: "text-2xl text-success group-hover:text-base-100",
                                 { t!("action-play") }
                             }
                         }
+                    }
+                    div {
+                        class: "flex gap-10",
                         div {
-                            class: "inline-flex border rounded-lg p-4 gap-2 text-error hover:bg-error hover:cursor-pointer group items-center",
+                            class: "inline-flex border rounded-lg p-4 gap-4 text-error group items-center",
+                            class: "hover:bg-error hover:cursor-pointer hover:shadow-xl",
+                            class: "transition-all duration-300 ease-in-out",
                             onclick: move |_| {
                                 use_state().remove_from_queue(0)
                             },
-                            Icon { icon: Icons::Close, class: "size-10 text-error group-hover:text-base-100" },
+                            Icon { icon: Icons::Skip, class: "size-10 text-error group-hover:text-base-100" },
                             span {
                                 class: "text-2xl text-error group-hover:text-base-100",
                                 { t!("action-skip") }
@@ -78,24 +89,18 @@ pub fn Show() -> Element {
             }
         }
         div {
-            class:"flex flex-1 flex-col mt-15 mb-5 mr-5",
+            class: "w-2"
+        }
+        div {
+            class:"flex flex-1 flex-col",
             ul {
-                class: "list flex-1 overflow-y-auto",
-                for (idx, name) in queue().into_iter().enumerate() {
+                class: "list flex-1 overflow-y-auto px-3 py-1",
+                for (idx, name) in queue().into_iter().map(Signal::new).enumerate() {
                     li {
-                        class: if idx == 0 {
-                            "list-row border shadow-xl hover:bg-base-200 hover:cursor-pointer hover:shadow-md"
-                        } else {
-                            "list-row hover:bg-base-200 hover:cursor-pointer hover:shadow-md"
-                        },
-                        onclick: move |_| {
-                            spawn(async move {
-                                busy.set(true);
-                                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
-                                busy.set(false)
-                            });
-                            use_state().open(idx);
-                        },
+                        class: "list-row hover:bg-base-200 hover:cursor-pointer hover:shadow-md group",
+                        class: "transition-all duration-300 ease-in-out hover:scale-103 hover:z-1",
+                        class: if idx == 0 { "outline outline-current/20 scale-103" },
+                        onclick: move |_| { open(idx) },
                         div {
                             class: "text-6xl font-thin tabular-nums opacity-80 text-warning",
                             { format!("{:02}", idx + 1) }

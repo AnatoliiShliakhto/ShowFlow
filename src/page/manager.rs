@@ -4,7 +4,7 @@ use ::dioxus::prelude::*;
 pub fn Manager() -> Element {
     rsx! {
         div {
-            class:"bg-base-300 rounded-box flex flex-1 flex-col mt-15 mb-5 ml-5",
+            class:"bg-base-300 rounded-box flex flex-1 flex-col",
             div {
                 class: "flex justify-between p-5",
                 h2 {
@@ -43,7 +43,7 @@ pub fn Manager() -> Element {
             "⇆"
         }
         div {
-            class: "bg-base-300 rounded-box flex flex-1 flex-col mt-15 mb-5 mr-5",
+            class: "bg-base-300 rounded-box flex flex-1 flex-col",
             div {
                 class: "flex justify-between p-5",
                 h2 {
@@ -80,12 +80,11 @@ pub fn Manager() -> Element {
 }
 
 pub fn Queue() -> Element {
-    let queue = use_state().queue();
-
     rsx! {
-        for (idx, name) in queue().into_iter().enumerate() {
+        for (idx, name) in use_state().queue()().into_iter().map(Signal::new).enumerate() {
             li {
                 class: "list-row hover:bg-base-200 hover:cursor-pointer hover:shadow-md",
+                class: "transition-all duration-150 ease-in-out",
                 onclick: move |_| {
                     let state = use_state();
                     state.remove_from_queue(idx);
@@ -109,23 +108,23 @@ pub fn Queue() -> Element {
 
 pub fn Files() -> Element {
     let state = use_state();
-    let files = state.files();
 
     rsx! {
-        for (name, name_cloned) in files().iter().map(|item| (item.name.clone(), item.name.clone())) {
-            if !state.queue_contains(&name) {
+        for entry in state.files()().into_iter().map(Signal::new) {
+            if !state.queue_contains(&entry().name) {
                 li {
                     class: "list-row hover:bg-base-200 hover:cursor-pointer hover:shadow-md",
+                    class: "transition-all duration-150 ease-in-out",
                     onclick: move |_| {
                         let state = use_state();
-                        state.add_to_queue(&name_cloned);
+                        state.add_to_queue(&entry().name);
                         state.save_playlist()
                     },
                     div {
                         class: "list-col-grow content-center",
                         div {
                             class: "text-lg uppercase font-semibold",
-                            { name }
+                            { entry().name }
                         }
                     }
                 }

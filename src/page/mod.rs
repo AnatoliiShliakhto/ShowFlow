@@ -4,7 +4,7 @@ mod manager;
 mod show;
 mod finish;
 
-pub use self::{ 
+pub use self::{
     home::*,
     loading::*,
     manager::*,

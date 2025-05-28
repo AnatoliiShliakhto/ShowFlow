@@ -9,9 +9,7 @@ mod service;
 
 use crate::{app::*, service::*};
 use ::dioxus::{desktop::tao, prelude::*};
-use std::env;
-use std::ffi::OsString;
-use std::path::PathBuf;
+use ::std::{env, path::PathBuf};
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
@@ -21,7 +19,8 @@ fn main() {
         .join("ShowFlow");
 
     let window = tao::window::WindowBuilder::new()
-        .with_resizable(true)
+        .with_resizable(false)
+        .with_transparent(true)
         .with_maximized(true)
         .with_always_on_top(false)
         .with_decorations(false)
@@ -40,6 +39,9 @@ fn main() {
         .launch(|| {
             use_init_i18n();
             use_init_state();
+
+            #[cfg(debug_assertions)]
+            dioxus::desktop::use_window().devtool();
 
             // use_init_i18n(|| {
             //     I18nConfig::new(langid!("en-US"))

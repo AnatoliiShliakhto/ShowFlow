@@ -49,5 +49,5 @@ title-playlist = Черга відтворення
 title-files = Список файлів
 
 action-play = РОЗПОЧАТИ
-action-skip = ПРОПУСТИТИ
+action-skip = НАСТУНИЙ
 action-restart = З ПОЧАТКУ

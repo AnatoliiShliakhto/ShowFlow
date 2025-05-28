@@ -17,7 +17,7 @@ windows = { version = "0.61.1" }
 image ={ version = "0.25.6" }
 base64 = { version = "0.22.1" }
 opener = { version = "0.8.1", features = ["reveal"] }
-directories = { version = "6.0.0" }
+#directories = { version = "6.0.0" }
 regex = { version = "1.11.1" }
 rfd = { version = "0.15.3" }
 

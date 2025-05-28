@@ -1,17 +1,18 @@
-mod menu;
-mod theme;
-mod play;
-mod refresh;
-mod folder;
 mod cancel;
-mod exit;
 mod close;
-mod settings;
-mod question;
-mod repeat;
-mod view;
-mod stack;
+mod exit;
+mod folder;
 mod language;
+mod menu;
+mod play;
+mod question;
+mod refresh;
+mod repeat;
+mod settings;
+mod skip;
+mod stack;
+mod theme;
+mod view;
 
 use ::dioxus::prelude::*;
 
@@ -31,6 +32,7 @@ pub enum Icons {
     View,
     Stack,
     Language,
+    Skip,
 }
 
 #[component]
@@ -50,5 +52,6 @@ pub fn Icon(#[props] icon: Icons, #[props(into)] class: &'static str) -> Element
         Icons::View => view::Icon(class),
         Icons::Stack => stack::Icon(class),
         Icons::Language => language::Icon(class),
+        Icons::Skip => skip::Icon(class),
     }
 }
