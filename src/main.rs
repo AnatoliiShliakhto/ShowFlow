@@ -43,18 +43,6 @@ fn main() {
             #[cfg(debug_assertions)]
             dioxus::desktop::use_window().devtool();
 
-            // use_init_i18n(|| {
-            //     I18nConfig::new(langid!("en-US"))
-            //         .with_locale((
-            //             langid!("en-US"),
-            //             include_str!("../assets/i18n/en-US.ftl"),
-            //         ))
-            //         .with_locale((
-            //             langid!("uk-UA"),
-            //             include_str!("../assets/i18n/uk-UA.ftl"),
-            //         ))
-            // });
-
             rsx! {
                 document::Link { rel: "icon", href: FAVICON }
                 document::Link { rel: "stylesheet", href: TAILWIND_CSS }

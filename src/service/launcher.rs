@@ -3,7 +3,6 @@ use ::std::{
     process::Command,
     sync::LazyLock,
 };
-use ::tokio::spawn;
 
 static POWERPOINT_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
     if let Some(path) = find_powerpoint_exe() {
@@ -26,24 +25,22 @@ fn find_powerpoint_exe() -> Option<PathBuf> {
     candidates
         .iter()
         .find(|path| Path::new(path).exists())
-        .map(|s| PathBuf::from(s))
+        .map(PathBuf::from)
 }
 
 pub fn open(path: PathBuf) {
-    spawn(async move {
+    tokio::spawn(async move {
         let path_str = path.to_str().unwrap_or_default();
-        if path_str.ends_with(".pptx") || path_str.ends_with(".ppt") {
-            if Command::new(POWERPOINT_PATH.as_os_str())
+        if (path_str.ends_with(".pptx") || path_str.ends_with(".ppt"))
+            && Command::new(POWERPOINT_PATH.as_os_str())
                 .arg("/s")
-                .arg(path.clone().to_str().unwrap())
+                .arg(path_str)
                 .spawn()
                 .is_ok()
-            {
-                return;
-            }
+        {
+            return;
         }
 
-        let _ = opener::open(path_str);
+        let _ = opener::open(path);
     });
-    //let _ = opener::open(path_str).is_err();
 }

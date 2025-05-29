@@ -2,6 +2,11 @@ use crate::{app::*, component::*, t};
 use ::dioxus::{desktop::use_window, prelude::*};
 
 pub fn Menu() -> Element {
+    let state = use_state();
+    let window = use_window();
+    let nav = use_navigator();
+    let is_queue_empty = use_memo(|| use_state().queue().is_empty());
+
     rsx! {
         div {
             class: "dropdown dropdown-end block",
@@ -19,9 +24,9 @@ pub fn Menu() -> Element {
                 li {
                     button {
                         class: "btn btn-block btn-ghost justify-start",
-                        class: if use_state().queue().is_empty() { "btn-disabled" },
+                        class: if is_queue_empty() { "btn-disabled" },
                         onclick: move |_| {
-                            use_navigator().push(Route::Show {});
+                            nav.push(Route::Show {});
                         },
                         Icon { icon: Icons::View, class: "size-6" }
                         { t!("menu-play") }
@@ -31,8 +36,8 @@ pub fn Menu() -> Element {
                     button {
                         class: "btn btn-block btn-ghost justify-start",
                         onclick: move |_| {
-                            use_state().load_playlist();
-                            use_navigator().push(Route::Manager {});
+                            state.load_playlist();
+                            nav.push(Route::Manager {});
                         },
                         Icon { icon: Icons::Stack, class: "size-6" }
                         { t!("menu-playlist") }
@@ -43,13 +48,13 @@ pub fn Menu() -> Element {
                         class: "btn btn-block btn-ghost justify-start",
                         onclick: move |_| {
                             spawn(async {
-                               let _ = opener::open_browser("https://github.com/AnatoliiShliakhto/ShowFlow"); 
+                               let _ = opener::open_browser("https://github.com/AnatoliiShliakhto/ShowFlow");
                             });
                         },
                         Icon { icon: Icons::Question, class: "size-6" }
                         { t!("menu-info") }
                     }
-                }                
+                }
                 div {
                     class: "divider my-0"
                 }
@@ -57,7 +62,7 @@ pub fn Menu() -> Element {
                     button {
                         class: "btn btn-block btn-ghost justify-start",
                         onclick: move |_| {
-                            use_window().close();
+                            window.close();
                         },
                         Icon { icon: Icons::Exit, class: "size-6" }
                         { t!("menu-exit") }

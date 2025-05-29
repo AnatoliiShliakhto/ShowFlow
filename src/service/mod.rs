@@ -1,11 +1,11 @@
 mod thumbnail;
 mod launcher;
-mod config;
 mod i18n;
+mod config;
 
-pub use self ::{
-    thumbnail::*,
-    launcher::*,
-    config::*,
+pub use self::{
     i18n::*,
+    launcher::*,
+    thumbnail::*,
+    config::*,
 };

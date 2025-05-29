@@ -1,27 +1,20 @@
 use ::serde::{Serialize, de::DeserializeOwned};
 use ::serde_json::{Map, Value};
-use ::std::path::PathBuf;
-use ::std::sync::{Arc, Mutex};
-use std::env;
+use ::std::{cell::RefCell, env, path::PathBuf};
 
-#[derive(Default, Clone)]
 pub struct Config {
     path: PathBuf,
-    inner: Arc<Mutex<Map<String, Value>>>,
+    inner: RefCell<Map<String, Value>>,
 }
 
 impl Config {
     pub fn init() -> Self {
         let path = PathBuf::from(env::var("LOCALAPPDATA").expect("env var LOCALAPPDATA not found"))
-            .join("ShowFlow").join("config.json");
-        Self {
-            path: path.clone(),
-            inner: Arc::new(Mutex::new(Self::load(path))),
-        }
-    }
+            .join("ShowFlow")
+            .join("config.json");
+        let inner = RefCell::new(Self::load(path.clone()));
 
-    fn lock(&self) -> Map<String, Value> {
-        self.inner.lock().unwrap().clone()
+        Self { path, inner }
     }
 
     fn load(path: PathBuf) -> Map<String, Value> {
@@ -30,21 +23,19 @@ impl Config {
     }
 
     fn save(&self) {
-        let config_str = serde_json::to_string_pretty(&self.lock()).unwrap_or_default();
+        let config_str = serde_json::to_string_pretty(&*self.inner.borrow()).unwrap_or_default();
         let _ = std::fs::write(&self.path, config_str);
     }
 
     pub fn get<T: DeserializeOwned + 'static>(&self, key: &str) -> Option<T> {
-        let Some(value) = self.lock().get(key).map(<Value>::clone) else {
-            return None;
-        };
+        let value = self.inner.borrow().get(key).cloned()?;
         serde_json::from_value(value).ok()
     }
 
     pub fn set<T: Serialize + 'static>(&self, key: &str, value: T) {
         let value = serde_json::to_value(value).unwrap_or_default();
         {
-            self.inner.lock().unwrap().insert(key.to_string(), value);
+            self.inner.borrow_mut().insert(key.to_string(), value);
         }
         self.save();
     }

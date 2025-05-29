@@ -2,6 +2,10 @@ use crate::{element::*, component::*, app::*};
 use ::dioxus::prelude::*;
 
 pub fn Header() -> Element {
+    let state = use_state();
+    let nav = use_navigator();
+    let is_queue_empty = use_memo(|| use_state().queue().is_empty());
+    
     rsx! {
         nav {
             class: "navbar p-0 items-center",
@@ -9,17 +13,17 @@ pub fn Header() -> Element {
                 class: "flex justify-start items-center pl-5",
                 button {
                     class: "btn btn-ghost btn-primary justify-start",
-                    class: if use_state().queue().is_empty() { "btn-disabled" },
+                    class: if is_queue_empty() { "btn-disabled" },
                     onclick: move |_| {
-                        use_navigator().push(Route::Show {});
+                        nav.push(Route::Show {});
                     },
                     Icon { icon: Icons::View, class: "size-6" }
                 }                
                 button {
                     class: "btn btn-ghost btn-accent justify-start",
                     onclick: move |_| {
-                        use_state().load_playlist();
-                        use_navigator().push(Route::Manager {});
+                        state.load_playlist();
+                        nav.push(Route::Manager {});
                     },
                     Icon { icon: Icons::Stack, class: "size-6" }
                 }                

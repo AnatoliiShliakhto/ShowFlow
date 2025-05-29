@@ -1,15 +1,19 @@
+use ::std::path::PathBuf;
 use ::dioxus::prelude::*;
 use crate::{app::*, component::*, t};
 
 pub fn Home() -> Element {
     let state = use_state();
+    let path = PathBuf::from(state.path());
+    let queue = state.queue();
+    let nav = use_navigator();
     
-    if state.path()().exists() {
+    if path.exists() {
         state.refresh_files();
-        if !state.queue().is_empty() {
-            use_navigator().push(Route::Show {});
+        if !queue.is_empty() {
+            nav.push(Route::Show {});
         } else {
-            use_navigator().push(Route::Manager {});
+            nav.push(Route::Manager {});
         }
         return rsx!()
     }
@@ -23,12 +27,14 @@ pub fn Home() -> Element {
             }
             button {
                 class: "btn btn-xl btn-outline",
-                onclick: move |_| {
-                    let state = use_state();
-                    if state.pick_folder() {
-                        state.refresh_files();
-                        use_navigator().push(Route::Manager {});
-                    }                        
+                onclick: {
+                    to_owned![state, nav];
+                    move |_| {
+                        if state.pick_folder() {
+                            state.refresh_files();
+                            nav.push(Route::Manager {});
+                        }
+                    }
                 },
                 Icon { icon: Icons::Folder, class: "size-10" }
             }

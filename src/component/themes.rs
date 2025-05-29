@@ -41,16 +41,15 @@ pub fn Themes() -> Element {
     if THEMES.len() < 2 {
         return rsx!();
     }
+    
     let cfg = use_state().cfg();
-    let mut active_theme = use_signal(move || cfg().get("theme").unwrap_or(THEMES[0].to_string()));
+    let active = use_signal(|| cfg.get("theme").unwrap_or(THEMES[0].to_string()));
 
-    let change_theme = move |event: Event<FormData>| {
-        if let Some(FormValue(value)) = event.values().get("theme-dropdown") {
-            (!value.is_empty()).then(move || {
-                let value = value[0].clone();
-                cfg().set("theme", value.clone());
-                active_theme.set(value)
-            });
+    let change = move |value: String| {
+        to_owned![active];
+        if !value.is_empty() {
+            cfg.set("theme", value.clone());
+            active.set(value)
         }
     };
 
@@ -69,7 +68,7 @@ pub fn Themes() -> Element {
                 class: "border border-white/5 shadow-2xl outline-1 outline-black/5 mt-11 z-500",
                 tabindex: 0,
                 form {
-                    onchange: change_theme,
+                    onchange: move |evt| { change(evt.value()) },
                     for theme in THEMES.iter().map(<&str>::deref) {
                         li {
                             div {
@@ -86,7 +85,7 @@ pub fn Themes() -> Element {
                                 r#type: "radio",
                                 name: "theme-dropdown",
                                 value: theme,
-                                initial_checked: active_theme().eq(theme),
+                                initial_checked: active().eq(theme),
                                 aria_label: t!(&format!("theme-{theme}")),
                             }
                         }
